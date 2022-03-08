@@ -11,6 +11,7 @@ import dev.cerus.visualcrafting.v17r1.VersionAdapter17R1;
 import dev.cerus.visualcrafting.v18r1.VersionAdapter18R1;
 import dev.cerus.visualcrafting.v18r2.VersionAdapter18R2;
 import java.io.File;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -57,6 +58,9 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
 
         this.getLogger().info("Visual Crafting was enabled!");
         this.getLogger().info("Using version adapter '" + versionAdapter.getClass().getSimpleName() + "'");
+
+        // bStats
+        new Metrics(this, 14561);
     }
 
     @Override

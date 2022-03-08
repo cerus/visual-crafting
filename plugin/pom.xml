@@ -74,15 +74,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>co.aikar</groupId>
-            <artifactId>acf-bukkit</artifactId>
-            <version>0.5.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <version>1.14.3</version>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>3.0.0</version>
             <scope>compile</scope>
         </dependency>
     </dependencies>
@@ -120,15 +114,19 @@
                     <relocations>
                         <relocation>
                             <pattern>co.aikar.commands</pattern>
-                            <shadedPattern>dev.cerus.visualcrafting.lib.acf</shadedPattern> <!-- Replace this -->
+                            <shadedPattern>dev.cerus.visualcrafting.lib.acf</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>co.aikar.locales</pattern>
-                            <shadedPattern>dev.cerus.visualcrafting.lib.acflocales</shadedPattern> <!-- Replace this -->
+                            <shadedPattern>dev.cerus.visualcrafting.lib.acflocales</shadedPattern>
                         </relocation>
                         <relocation>
                             <pattern>dev.cerus.maps</pattern>
-                            <shadedPattern>dev.cerus.visualcrafting.lib.maps</shadedPattern> <!-- Replace this -->
+                            <shadedPattern>dev.cerus.visualcrafting.lib.maps</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>dev.cerus.visualcrafting.lib.bstats</shadedPattern>
                         </relocation>
                     </relocations>
                     <filters>
