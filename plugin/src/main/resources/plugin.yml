@@ -1,0 +1,5 @@
+name: visual-crafting
+version: ${parent.version}
+author: Cerus
+main: dev.cerus.visualcrafting.plugin.VisualCraftingPlugin
+api-version: 1.16
