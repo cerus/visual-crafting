@@ -54,7 +54,7 @@ public class CraftingListener implements Listener {
         }
 
         // Crafting table closed? Cancel crafting
-        //this.visualizationController.craftingCancelled((Player) event.getView().getPlayer(), inv.getLocation().getBlock());
+        this.visualizationController.craftingCancelled((Player) event.getView().getPlayer(), inv.getLocation().getBlock());
     }
 
 }
