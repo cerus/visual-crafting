@@ -33,4 +33,11 @@ public interface Config {
      */
     int mapIdRangeMax();
 
+    /**
+     * Whether to always force the hitbox to the top or not
+     *
+     * @return True or false
+     */
+    boolean adjustHitbox();
+
 }

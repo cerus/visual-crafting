@@ -1,5 +1,9 @@
 name: visual-crafting
-version: ${parent.version}
+version: ${project.parent.version}
 author: Cerus
 main: dev.cerus.visualcrafting.plugin.VisualCraftingPlugin
 api-version: 1.16
+
+description: "Visualizes the crafting process using invisible item frames and maps."
+prefix: "Visual Crafting"
+website: "https://github.com/cerus/visual-crafting"

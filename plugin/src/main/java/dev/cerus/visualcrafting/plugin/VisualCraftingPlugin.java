@@ -83,4 +83,9 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
         return this.getConfig().getInt("map-id.max");
     }
 
+    @Override
+    public boolean adjustHitbox() {
+        return this.getConfig().getBoolean("adjust-hitbox");
+    }
+
 }

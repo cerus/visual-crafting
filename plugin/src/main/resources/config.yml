@@ -5,3 +5,8 @@ entity-id:
 map-id:
   min: 500000
   max: 1000000
+
+# Will move the frame's hitbox out of the way to allow players to
+# access the crafting table from the top. This will only work on
+# 1.16.5, unfortunately.
+adjust-hitbox: false

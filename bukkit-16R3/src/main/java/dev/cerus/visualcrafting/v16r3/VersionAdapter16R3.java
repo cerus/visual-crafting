@@ -55,7 +55,7 @@ public class VersionAdapter16R3 extends VersionAdapter {
                     default -> 0;
                 },
                 EntityTypes.ITEM_FRAME,
-                switch (direction) {
+                this.config.adjustHitbox() ? 0 : switch (direction) {
                     case UP -> 1;
                     case NORTH -> 2;
                     case SOUTH -> 3;
