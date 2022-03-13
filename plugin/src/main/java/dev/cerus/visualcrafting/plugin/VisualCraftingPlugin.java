@@ -12,7 +12,9 @@ import dev.cerus.visualcrafting.v18r1.VersionAdapter18R1;
 import dev.cerus.visualcrafting.v18r2.VersionAdapter18R2;
 import java.io.File;
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
+import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class VisualCraftingPlugin extends JavaPlugin implements Config {
@@ -54,13 +56,22 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
 
         final VisualizationController visualizationController = new VisualizationController(versionAdapter, textureCache);
 
-        this.getServer().getPluginManager().registerEvents(new CraftingListener(visualizationController), this);
+        this.getServer().getPluginManager().registerEvents(new CraftingListener(this, visualizationController), this);
 
         this.getLogger().info("Visual Crafting was enabled!");
         this.getLogger().info("Using version adapter '" + versionAdapter.getClass().getSimpleName() + "'");
 
         // bStats
-        new Metrics(this, 14561);
+        final Metrics metrics = new Metrics(this, 14561);
+        metrics.addCustomChart(new SimplePie("enable_permission", () ->
+                this.getConfig().getBoolean("permission.enable", false) ? "True" : "False"));
+        metrics.addCustomChart(new SimplePie("enable_hitbox", () ->
+                this.getConfig().getBoolean("adjust-hitbox", false) ? "True" : "False"));
+    }
+
+    public boolean canUse(final Permissible permissible) {
+        return !this.getConfig().getBoolean("permission.enable", false)
+                || permissible.hasPermission(this.getConfig().getString("permission.perm", ""));
     }
 
     @Override

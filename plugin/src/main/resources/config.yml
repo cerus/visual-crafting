@@ -10,3 +10,7 @@ map-id:
 # access the crafting table from the top. This will only work on
 # 1.16.5, unfortunately.
 adjust-hitbox: false
+
+permission:
+  enable: false
+  perm: "my.cool.permission"
