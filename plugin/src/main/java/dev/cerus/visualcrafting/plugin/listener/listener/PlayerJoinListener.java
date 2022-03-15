@@ -3,9 +3,10 @@ package dev.cerus.visualcrafting.plugin.listener.listener;
 import dev.cerus.visualcrafting.api.version.VersionAdapter;
 import dev.cerus.visualcrafting.plugin.VisualCraftingPlugin;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-public class PlayerJoinListener {
+public class PlayerJoinListener implements Listener {
 
     private final VisualCraftingPlugin plugin;
     private final VersionAdapter versionAdapter;
