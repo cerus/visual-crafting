@@ -7,11 +7,16 @@ import dev.cerus.visualcrafting.plugin.texture.TextureCache;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Rotation;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -33,6 +38,25 @@ public class VisualizationController {
     public VisualizationController(final VersionAdapter versionAdapter, final TextureCache textureCache) {
         this.versionAdapter = versionAdapter;
         this.textureCache = textureCache;
+    }
+
+    public void entityClick(final Player player, final int eid) {
+        this.visualizationMap.values().stream()
+                .filter(visualization -> visualization.entityId == eid)
+                .findAny()
+                .ifPresent(visualization -> {
+                    final PlayerInteractEvent interactEvent = new PlayerInteractEvent(player,
+                            Action.RIGHT_CLICK_BLOCK,
+                            player.getInventory().getItemInMainHand(),
+                            visualization.block.getLocation().getBlock(), // Get a fresh block object, the old one could be outdated
+                            BlockFace.SELF,
+                            EquipmentSlot.HAND);
+                    Bukkit.getPluginManager().callEvent(interactEvent);
+                    if (interactEvent.useInteractedBlock() == Event.Result.ALLOW
+                            || interactEvent.useInteractedBlock() == Event.Result.DEFAULT) {
+                        player.openWorkbench(visualization.block.getLocation(), false);
+                    }
+                });
     }
 
     /**

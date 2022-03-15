@@ -3,14 +3,18 @@ package dev.cerus.visualcrafting.v16r3;
 import dev.cerus.visualcrafting.api.config.Config;
 import dev.cerus.visualcrafting.api.version.FakeMap;
 import dev.cerus.visualcrafting.api.version.VersionAdapter;
+import io.netty.channel.ChannelDuplexHandler;
+import io.netty.channel.ChannelHandlerContext;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.BiConsumer;
 import net.minecraft.server.v1_16_R3.DataWatcher;
 import net.minecraft.server.v1_16_R3.DataWatcherRegistry;
 import net.minecraft.server.v1_16_R3.EntityTypes;
 import net.minecraft.server.v1_16_R3.Packet;
+import net.minecraft.server.v1_16_R3.PacketPlayInUseEntity;
 import net.minecraft.server.v1_16_R3.PacketPlayOutEntityDestroy;
 import net.minecraft.server.v1_16_R3.PacketPlayOutEntityMetadata;
 import net.minecraft.server.v1_16_R3.PacketPlayOutMap;
@@ -28,14 +32,42 @@ import org.bukkit.inventory.ItemStack;
 public class VersionAdapter16R3 extends VersionAdapter {
 
     private Config config;
+    private BiConsumer<Player, Integer> entityClickCallback;
     private int nextEntityId;
     private int nextMapId;
 
     @Override
-    public void init(final Config config) {
+    public void init(final Config config, final BiConsumer<Player, Integer> entityClickCallback) {
         this.config = config;
+        this.entityClickCallback = entityClickCallback;
         this.nextEntityId = config.entityIdRangeMin();
         this.nextMapId = config.mapIdRangeMin();
+    }
+
+    @Override
+    public void inject(final Player player) {
+        if (this.config.enablePacketListening()) {
+            ((CraftPlayer) player).getHandle().playerConnection.networkManager.channel.pipeline()
+                    .addBefore("packet_handler", "visual_crafting", new ChannelDuplexHandler() {
+                        @Override
+                        public void channelRead(final ChannelHandlerContext ctx, final Object msg) throws Exception {
+                            if (msg instanceof PacketPlayInUseEntity useEntity) {
+                                VersionAdapter16R3.this.handlePacketIn(player, useEntity);
+                            }
+                            super.channelRead(ctx, msg);
+                        }
+                    });
+        }
+    }
+
+    private void handlePacketIn(final Player player, final PacketPlayInUseEntity packet) {
+        try {
+            final Field a = packet.getClass().getDeclaredField("a");
+            a.setAccessible(true);
+            this.entityClickCallback.accept(player, (Integer) a.get(packet));
+        } catch (final NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

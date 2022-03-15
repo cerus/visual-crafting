@@ -14,6 +14,9 @@ import java.io.File;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.permissions.Permissible;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -52,11 +55,19 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
             this.getPluginLoader().disablePlugin(this);
             return;
         }
-        versionAdapter.init(this);
 
         final VisualizationController visualizationController = new VisualizationController(versionAdapter, textureCache);
+        versionAdapter.init(this, (player, integer) ->
+                this.getServer().getScheduler().runTask(this, () ->
+                        visualizationController.entityClick(player, integer)));
 
         this.getServer().getPluginManager().registerEvents(new CraftingListener(this, visualizationController), this);
+        this.getServer().getPluginManager().registerEvents(new Listener() {
+            @EventHandler
+            public void onJoin(final PlayerJoinEvent event) {
+                versionAdapter.inject(event.getPlayer());
+            }
+        }, this);
 
         this.getLogger().info("Visual Crafting was enabled!");
         this.getLogger().info("Using version adapter '" + versionAdapter.getClass().getSimpleName() + "'");
@@ -66,7 +77,9 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
         metrics.addCustomChart(new SimplePie("enable_permission", () ->
                 this.getConfig().getBoolean("permission.enable", false) ? "True" : "False"));
         metrics.addCustomChart(new SimplePie("enable_hitbox", () ->
-                this.getConfig().getBoolean("adjust-hitbox", false) ? "True" : "False"));
+                this.adjustHitbox() ? "True" : "False"));
+        metrics.addCustomChart(new SimplePie("enable_packet_listening", () ->
+                this.enablePacketListening() ? "True" : "False"));
     }
 
     public boolean canUse(final Permissible permissible) {
@@ -97,6 +110,11 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
     @Override
     public boolean adjustHitbox() {
         return this.getConfig().getBoolean("adjust-hitbox");
+    }
+
+    @Override
+    public boolean enablePacketListening() {
+        return this.getConfig().getBoolean("enable-packet-listening", true);
     }
 
 }

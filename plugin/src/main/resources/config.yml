@@ -11,6 +11,10 @@ map-id:
 # 1.16.5, unfortunately.
 adjust-hitbox: false
 
+# If enabled, players will be able to access the crafting table
+# when interacting with the fake item frame.
+enable-packet-listening: true
+
 permission:
   enable: false
   perm: "my.cool.permission"

@@ -1,9 +1,11 @@
 package dev.cerus.visualcrafting.api.version;
 
 import dev.cerus.visualcrafting.api.config.Config;
+import java.util.function.BiConsumer;
 import org.bukkit.Location;
 import org.bukkit.Rotation;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -14,9 +16,17 @@ public abstract class VersionAdapter {
     /**
      * Initialize the adapter
      *
-     * @param config The plugin config
+     * @param config              The plugin config
+     * @param entityClickCallback Callback when a player clicks an entity
      */
-    public abstract void init(Config config);
+    public abstract void init(Config config, BiConsumer<Player, Integer> entityClickCallback);
+
+    /**
+     * Used to inject a packet listener
+     *
+     * @param player The player to inject
+     */
+    public abstract void inject(Player player);
 
     /**
      * Spawn a fake item frame and return the frame's id

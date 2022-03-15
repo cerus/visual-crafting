@@ -40,4 +40,11 @@ public interface Config {
      */
     boolean adjustHitbox();
 
+    /**
+     * Whether to listen for incoming entity click packets or not
+     *
+     * @return True or false
+     */
+    boolean enablePacketListening();
+
 }
