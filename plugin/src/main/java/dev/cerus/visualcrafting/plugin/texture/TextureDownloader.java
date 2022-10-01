@@ -5,13 +5,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import dev.cerus.maps.api.MapColor;
-import java.awt.Color;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -24,7 +22,6 @@ import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import javax.imageio.ImageIO;
 
 /**
  * Downloads and converts textures from Mojang
@@ -49,12 +46,9 @@ public class TextureDownloader {
      * @param logger       The logger
      * @param folder       The temporary folder
      * @param textureCache The texture cache instance
-     *
      * @return A callback
      */
-    public CompletableFuture<Void> downloadTextures(final Logger logger,
-                                                    final File folder,
-                                                    final TextureCache textureCache) {
+    public CompletableFuture<Void> downloadTextures(final Logger logger, final File folder, final TextureCache textureCache) {
         folder.mkdirs();
         final CompletableFuture<Void> future = new CompletableFuture<>();
         this.executorService.execute(() -> {
@@ -98,23 +92,24 @@ public class TextureDownloader {
 
                 // We don't need it anymore
                 clientJar.delete();
+                // some JVMs return null for empty dirs
+                File[] files;
+                if ((files = folder.listFiles()) == null || files.length == 0) folder.delete();
 
                 // We're done!
                 logger.info("Done");
                 future.complete(null);
             } catch (final Throwable e) {
                 future.completeExceptionally(e);
+                // some JVMs return null for empty dirs
+                File[] files;
+                if ((files = folder.listFiles()) == null || files.length == 0) folder.delete();
             }
         });
-        folder.delete();
         return future;
     }
 
-    private void extractAndConvert(final File folder,
-                                   final TextureCache textureCache,
-                                   final File clientJar,
-                                   final String group,
-                                   final Path outputPath) throws IOException {
+    private void extractAndConvert(final File folder, final TextureCache textureCache, final File clientJar, final String group, final Path outputPath) throws IOException {
         this.extractTextures(clientJar, group, outputPath);
         final File[] files = folder.listFiles(f -> f.getName().endsWith(".png"));
         if (files != null) {
@@ -128,7 +123,6 @@ public class TextureDownloader {
      * Gets the latest Minecraft client url from the Minecraft version manifest
      *
      * @return The latest client download url
-     *
      * @throws IOException In case of IO errors
      */
     private String getLatestClientUrl() throws IOException {
@@ -160,7 +154,6 @@ public class TextureDownloader {
      * @param fileToExtract The jar file to extract
      * @param outputPath    The path where we should drop the textures in
      * @param group         The texture group to extract
-     *
      * @throws IOException In case of IO errors
      */
     private void extractTextures(final File fileToExtract, final String group, final Path outputPath) throws IOException {
@@ -191,7 +184,6 @@ public class TextureDownloader {
      *
      * @param textureFile  The file to convert
      * @param textureCache The texture cache
-     *
      * @throws IOException In case of IO errors
      */
     private void convertFileToTexture(final String group, final File textureFile, final TextureCache textureCache) throws IOException {
@@ -221,9 +213,7 @@ public class TextureDownloader {
      * Connects to an url and reads the response body
      *
      * @param url The url to connect to
-     *
      * @return The response body
-     *
      * @throws IOException In case of IO errors
      */
     private String get(final String url) throws IOException {
@@ -243,7 +233,6 @@ public class TextureDownloader {
      *
      * @param url The url to download something from
      * @param to  The output file
-     *
      * @throws IOException In case of IO errors
      */
     private void download(final String url, final File to) throws IOException {
@@ -263,9 +252,7 @@ public class TextureDownloader {
      * Connect to an url and get the input stream
      *
      * @param url Url to connect to
-     *
      * @return The input stream of the connection
-     *
      * @throws IOException In case of IO errors
      */
     private InputStream connect(final String url) throws IOException {
