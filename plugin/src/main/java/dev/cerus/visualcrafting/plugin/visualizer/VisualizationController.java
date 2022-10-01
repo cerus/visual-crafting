@@ -19,6 +19,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
+import static dev.cerus.visualcrafting.plugin.visualizer.DirectionProvider.getDirection;
+
 /**
  * Controls visualizations
  * TODO: Maybe break this class up a bit by moving the map drawing part somewhere else
@@ -193,39 +195,13 @@ public class VisualizationController {
      * @return The player's direction
      */
     private Rotation calculateFrameRotation(final Player actor) {
-        return switch (this.getDirection(actor.getLocation().getYaw()).getOppositeFace()) {
+        final var yaw = actor.getLocation().getYaw();
+        return switch (getDirection(yaw).getOppositeFace()) {
             case WEST -> Rotation.CLOCKWISE_45;
             case NORTH -> Rotation.CLOCKWISE;
             case EAST -> Rotation.CLOCKWISE_135;
             default -> Rotation.NONE;
         };
-    }
-
-    /**
-     * Calculate a direction from a yaw value
-     *
-     * @param yaw The yaw
-     *
-     * @return The direction
-     */
-    private BlockFace getDirection(final float yaw) {
-        final int yawInt = (int) (yaw < 0 ? 180 + (180 - -yaw) : yaw);
-        final Map<Integer, BlockFace> directionMap = Map.of(
-                0, BlockFace.SOUTH,
-                360, BlockFace.SOUTH,
-                90, BlockFace.WEST,
-                180, BlockFace.NORTH,
-                270, BlockFace.EAST
-        );
-        return directionMap.entrySet().stream()
-                .map(e -> {
-                    final double diff = (double) Math.max(yawInt, e.getKey()) - Math.min(yawInt, e.getKey());
-                    return Map.entry(diff, e);
-                })
-                .sorted(Comparator.comparingDouble(Map.Entry::getKey))
-                .map(e -> e.getValue().getValue())
-                .findFirst()
-                .orElseThrow();
     }
 
     private long getBlockKey(final Block block) {
