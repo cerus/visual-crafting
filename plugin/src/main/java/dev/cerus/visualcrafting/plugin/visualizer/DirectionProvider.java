@@ -2,10 +2,9 @@ package dev.cerus.visualcrafting.plugin.visualizer;
 
 import java.util.Comparator;
 import java.util.Map;
-
 import org.bukkit.block.BlockFace;
 
-class DirectionProvider {
+public class DirectionProvider {
 
     private final static Map<Integer, BlockFace> DIRECTION_MAP = Map.of(
             0, BlockFace.SOUTH,
@@ -14,6 +13,9 @@ class DirectionProvider {
             180, BlockFace.NORTH,
             270, BlockFace.EAST
     );
+
+    private DirectionProvider() {
+    }
 
     /**
      * Calculate a direction from a yaw value
@@ -34,4 +36,5 @@ class DirectionProvider {
                 .findFirst()
                 .orElseThrow();
     }
+
 }
