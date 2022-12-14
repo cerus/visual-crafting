@@ -65,6 +65,12 @@
             <version>${project.parent.version}</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>dev.cerus.visualcrafting</groupId>
+            <artifactId>bukkit-19R2</artifactId>
+            <version>${project.parent.version}</version>
+            <scope>compile</scope>
+        </dependency>
 
         <dependency>
             <groupId>dev.cerus.maps</groupId>

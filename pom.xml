@@ -16,6 +16,7 @@
         <module>bukkit-18R1</module>
         <module>bukkit-18R2</module>
         <module>bukkit-19R1</module>
+        <module>bukkit-19R2</module>
     </modules>
 
     <properties>
