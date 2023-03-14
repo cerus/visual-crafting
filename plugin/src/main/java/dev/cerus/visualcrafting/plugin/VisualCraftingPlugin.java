@@ -13,6 +13,7 @@ import dev.cerus.visualcrafting.v18r1.VersionAdapter18R1;
 import dev.cerus.visualcrafting.v18r2.VersionAdapter18R2;
 import dev.cerus.visualcrafting.v19r1.VersionAdapter19R1;
 import dev.cerus.visualcrafting.v19r2.VersionAdapter19R2;
+import dev.cerus.visualcrafting.v19r3.VersionAdapter19R3;
 import java.io.File;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
@@ -26,8 +27,17 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
     public void onEnable() {
         this.saveDefaultConfig();
 
+        String version = Bukkit.getVersion();
+        version = version.substring(version.indexOf("MC: ") + 4, version.lastIndexOf(')'));
+        if (!version.matches("\\d+\\.\\d+(\\.\\d+)?")) {
+            this.getLogger().severe("Could not detect server version for " + version);
+            this.getPluginLoader().disablePlugin(this);
+            return;
+        }
+        final String major = version.split("\\.")[1];
+
         // Initialize textures
-        final File textureCacheFile = new File(this.getDataFolder(), "textures");
+        final File textureCacheFile = new File(this.getDataFolder(), "textures_" + major);
         final TextureCache textureCache = new TextureCache();
         if (textureCacheFile.exists()) {
             textureCache.read(textureCacheFile);
@@ -41,8 +51,6 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
         }
 
         // Initialize version adapter
-        String version = Bukkit.getVersion();
-        version = version.substring(version.indexOf("MC: ") + 4, version.lastIndexOf(')'));
         final VersionAdapter versionAdapter = switch (version) {
             case "1.16.5" -> new VersionAdapter16R3();
             case "1.17", "1.17.1" -> new VersionAdapter17R1();
@@ -50,6 +58,7 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
             case "1.18.2" -> new VersionAdapter18R2();
             case "1.19", "1.19.1", "1.19.2" -> new VersionAdapter19R1();
             case "1.19.3" -> new VersionAdapter19R2();
+            case "1.19.4" -> new VersionAdapter19R3();
             default -> null;
         };
         if (versionAdapter == null) {

@@ -6,7 +6,7 @@ Visualizes the crafting process
 
 ## Compatibility
 
-Compatible with Spigot & Paper 1.16.5, 1.17, 1.17.1, 1.18.1 and 1.18.2
+Compatible with Spigot & Paper 1.16.5, 1.17, 1.17.1, 1.18.1, 1.18.2, 1.19, 1.19.1, 1.19.2, 1.19.3 and 1.19.4
 
 ## How it works
 

@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.imageio.ImageIO;
+import org.bukkit.Bukkit;
 
 /**
  * Downloads and converts textures from Mojang
@@ -62,7 +63,7 @@ public class TextureDownloader {
                 // Get download url
                 final String clientDownloadUrl;
                 try {
-                    clientDownloadUrl = this.getLatestClientUrl();
+                    clientDownloadUrl = this.getMatchingClientUrl();
                 } catch (final IOException e) {
                     future.completeExceptionally(e);
                     return;
@@ -126,24 +127,24 @@ public class TextureDownloader {
     }
 
     /**
-     * Gets the latest Minecraft client url from the Minecraft version manifest
+     * Gets a matching Minecraft client url from the Minecraft version manifest
      *
      * @return The latest client download url
      *
      * @throws IOException In case of IO errors
      */
-    private String getLatestClientUrl() throws IOException {
-        // Get version manifest and pull out the latest release id
+    private String getMatchingClientUrl() throws IOException {
+        // Get version manifest, get server version
         final JsonObject versionsObj = new JsonParser().parse(this.get(VERSION_MANIFEST_URL)).getAsJsonObject();
-        final JsonObject latestObj = versionsObj.get("latest").getAsJsonObject();
-        final String latestRelease = latestObj.get("release").getAsString();
+        String version = Bukkit.getVersion();
+        version = version.substring(version.indexOf("MC: ") + 4, version.lastIndexOf(')'));
 
         // Loop through entries until we find the release
         String url = null;
         final JsonArray versionsArr = versionsObj.get("versions").getAsJsonArray();
         for (final JsonElement element : versionsArr) {
             final JsonObject obj = element.getAsJsonObject();
-            if (obj.get("id").getAsString().equals(latestRelease)) {
+            if (obj.get("id").getAsString().equals(version)) {
                 url = obj.get("url").getAsString();
             }
         }
