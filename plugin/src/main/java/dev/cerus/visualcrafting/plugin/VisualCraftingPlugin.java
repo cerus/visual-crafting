@@ -14,7 +14,9 @@ import dev.cerus.visualcrafting.v18r2.VersionAdapter18R2;
 import dev.cerus.visualcrafting.v19r1.VersionAdapter19R1;
 import dev.cerus.visualcrafting.v19r2.VersionAdapter19R2;
 import dev.cerus.visualcrafting.v19r3.VersionAdapter19R3;
+import dev.cerus.visualcrafting.v20r1.VersionAdapter20R1;
 import java.io.File;
+import java.util.logging.Level;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
@@ -34,10 +36,10 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
             this.getPluginLoader().disablePlugin(this);
             return;
         }
-        final String major = version.split("\\.")[1];
+        final String minor = version.split("\\.")[1];
 
         // Initialize textures
-        final File textureCacheFile = new File(this.getDataFolder(), "textures_" + major);
+        final File textureCacheFile = new File(this.getDataFolder(), "textures_" + minor);
         final TextureCache textureCache = new TextureCache();
         if (textureCacheFile.exists()) {
             textureCache.read(textureCacheFile);
@@ -45,6 +47,10 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
             final TextureDownloader downloader = new TextureDownloader();
             downloader.downloadTextures(this.getLogger(), new File(this.getDataFolder(), "temp"), textureCache)
                     .whenComplete((unused, throwable) -> {
+                        if (throwable != null) {
+                            this.getLogger().log(Level.SEVERE, "Failed to download textures", throwable);
+                        }
+
                         downloader.shutdown();
                         textureCache.write(textureCacheFile);
                     });
@@ -59,6 +65,7 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
             case "1.19", "1.19.1", "1.19.2" -> new VersionAdapter19R1();
             case "1.19.3" -> new VersionAdapter19R2();
             case "1.19.4" -> new VersionAdapter19R3();
+            case "1.20" -> new VersionAdapter20R1();
             default -> null;
         };
         if (versionAdapter == null) {
@@ -90,7 +97,7 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
 
     public boolean canUse(final Permissible permissible) {
         return !this.getConfig().getBoolean("permission.enable", false)
-                || permissible.hasPermission(this.getConfig().getString("permission.perm", ""));
+               || permissible.hasPermission(this.getConfig().getString("permission.perm", ""));
     }
 
     @Override

@@ -4,7 +4,7 @@ import dev.cerus.visualcrafting.api.version.FakeMap;
 import dev.cerus.visualcrafting.api.version.VersionAdapter;
 import dev.cerus.visualcrafting.plugin.texture.Texture;
 import dev.cerus.visualcrafting.plugin.texture.TextureCache;
-import java.util.Comparator;
+import static dev.cerus.visualcrafting.plugin.visualizer.DirectionProvider.getDirection;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Bukkit;
@@ -18,8 +18,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-
-import static dev.cerus.visualcrafting.plugin.visualizer.DirectionProvider.getDirection;
 
 /**
  * Controls visualizations
@@ -55,7 +53,7 @@ public class VisualizationController {
                             EquipmentSlot.HAND);
                     Bukkit.getPluginManager().callEvent(interactEvent);
                     if (interactEvent.useInteractedBlock() == Event.Result.ALLOW
-                            || interactEvent.useInteractedBlock() == Event.Result.DEFAULT) {
+                        || interactEvent.useInteractedBlock() == Event.Result.DEFAULT) {
                         player.openWorkbench(visualization.block.getLocation(), false);
                     }
                 });
