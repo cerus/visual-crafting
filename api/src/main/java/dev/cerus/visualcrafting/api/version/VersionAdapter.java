@@ -91,4 +91,13 @@ public abstract class VersionAdapter {
      */
     public abstract void sendMap(FakeMap map);
 
+    /**
+     * Get an array of implemented VisualCrafting features
+     *
+     * @return All the features this implementation implements
+     */
+    public Feature[] getImplementedFeatures() {
+        return new Feature[] {Feature.MAPS};
+    }
+
 }
