@@ -13,6 +13,9 @@ import org.bukkit.inventory.ItemStack;
  */
 public abstract class VersionAdapter {
 
+    protected static final Feature[] FEATURES_BASE = new Feature[] {Feature.MAPS};
+    protected static final Feature[] FEATURES_DISPLAY = new Feature[] {Feature.MAPS, Feature.ITEM_DISPLAYS};
+
     /**
      * Initialize the adapter
      *
@@ -47,6 +50,10 @@ public abstract class VersionAdapter {
      * @param invisible The frame's visibility
      */
     public abstract void updateItemFrame(int frameId, ItemStack itemStack, Rotation rotation, boolean invisible);
+
+    public int spawnItemDisplay(final FakeItemDisplay itemDisplay) {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * Remove an entity
@@ -97,7 +104,7 @@ public abstract class VersionAdapter {
      * @return All the features this implementation implements
      */
     public Feature[] getImplementedFeatures() {
-        return new Feature[] {Feature.MAPS};
+        return FEATURES_BASE;
     }
 
 }

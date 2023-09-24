@@ -1,7 +1,10 @@
 package dev.cerus.visualcrafting.v20r1;
 
 import dev.cerus.visualcrafting.api.config.Config;
+import dev.cerus.visualcrafting.api.math.MatrixMath;
+import dev.cerus.visualcrafting.api.version.FakeItemDisplay;
 import dev.cerus.visualcrafting.api.version.FakeMap;
+import dev.cerus.visualcrafting.api.version.Feature;
 import dev.cerus.visualcrafting.api.version.VersionAdapter;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -31,6 +34,7 @@ import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.joml.Matrix4f;
 
 public class VersionAdapter20R1 extends VersionAdapter {
 
@@ -135,6 +139,50 @@ public class VersionAdapter20R1 extends VersionAdapter {
     }
 
     @Override
+    public int spawnItemDisplay(final FakeItemDisplay itemDisplay) {
+        final Matrix4f transformation = MatrixMath.combine(
+                MatrixMath.combineAndExpand(
+                        MatrixMath.rotationX()
+                ),
+                MatrixMath.scale(1f, 1f, 0.0001f)
+        );
+
+        final int eid = this.getNewEntityId();
+        final PacketPlayOutSpawnEntity packet = new PacketPlayOutSpawnEntity(
+                eid,
+                UUID.randomUUID(),
+                itemDisplay.getLocation().getBlockX(),
+                itemDisplay.getLocation().getBlockY(),
+                itemDisplay.getLocation().getBlockZ(),
+                direction == BlockFace.DOWN ? 90 : direction == BlockFace.UP ? -90 : 0,
+                switch (direction) {
+                    case NORTH -> -180;
+                    case EAST -> -90;
+                    case WEST -> 90;
+                    default -> 0;
+                },
+                EntityTypes.af,
+                switch (direction) {
+                    case UP -> 1;
+                    case NORTH -> 2;
+                    case SOUTH -> 3;
+                    case WEST -> 4;
+                    case EAST -> 5;
+                    default -> 0;
+                },
+                new Vec3D(0, 0, 0),
+                switch (direction) {
+                    case NORTH -> -180;
+                    case EAST -> -90;
+                    case WEST -> 90;
+                    default -> 0;
+                }
+        );
+        Bukkit.getOnlinePlayers().forEach(player -> this.sendPacket(player, packet));
+        return eid;
+    }
+
+    @Override
     public void destroyEntity(final int entityId) {
         final PacketPlayOutEntityDestroy packet = new PacketPlayOutEntityDestroy(entityId);
         Bukkit.getOnlinePlayers().forEach(player -> this.sendPacket(player, packet));
@@ -159,6 +207,11 @@ public class VersionAdapter20R1 extends VersionAdapter {
                         this.getMapData(map))
         );
         Bukkit.getOnlinePlayers().forEach(player -> this.sendPacket(player, packet));
+    }
+
+    @Override
+    public Feature[] getImplementedFeatures() {
+        return VersionAdapter.FEATURES_DISPLAY;
     }
 
     private void sendPacket(final Player player, final Packet<?> packet) {
