@@ -1,4 +1,4 @@
-package dev.cerus.visualcrafting.plugin.listener.listener;
+package dev.cerus.visualcrafting.plugin.listener;
 
 import dev.cerus.visualcrafting.api.version.VersionAdapter;
 import dev.cerus.visualcrafting.plugin.VisualCraftingPlugin;

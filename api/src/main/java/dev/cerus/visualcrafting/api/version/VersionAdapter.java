@@ -1,6 +1,7 @@
 package dev.cerus.visualcrafting.api.version;
 
 import dev.cerus.visualcrafting.api.config.Config;
+import java.util.EnumSet;
 import java.util.function.BiConsumer;
 import org.bukkit.Location;
 import org.bukkit.Rotation;
@@ -13,8 +14,8 @@ import org.bukkit.inventory.ItemStack;
  */
 public abstract class VersionAdapter {
 
-    protected static final Feature[] FEATURES_BASE = new Feature[] {Feature.MAPS};
-    protected static final Feature[] FEATURES_DISPLAY = new Feature[] {Feature.MAPS, Feature.ITEM_DISPLAYS};
+    protected static final EnumSet<Feature> FEATURES_BASE = EnumSet.of(Feature.MAPS);
+    protected static final EnumSet<Feature> FEATURES_DISPLAY = EnumSet.of(Feature.MAPS, Feature.ITEM_DISPLAYS);
 
     /**
      * Initialize the adapter
@@ -51,7 +52,24 @@ public abstract class VersionAdapter {
      */
     public abstract void updateItemFrame(int frameId, ItemStack itemStack, Rotation rotation, boolean invisible);
 
+    /**
+     * Spawn a fake item display and return the display's id
+     *
+     * @param itemDisplay The item display
+     *
+     * @return Display entity id
+     */
     public int spawnItemDisplay(final FakeItemDisplay itemDisplay) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Update a fake item display
+     *
+     * @param displayId   The entity id of the display
+     * @param itemDisplay The display
+     */
+    public void updateItemDisplay(final int displayId, final FakeItemDisplay itemDisplay) {
         throw new UnsupportedOperationException();
     }
 
@@ -103,7 +121,7 @@ public abstract class VersionAdapter {
      *
      * @return All the features this implementation implements
      */
-    public Feature[] getImplementedFeatures() {
+    public EnumSet<Feature> getImplementedFeatures() {
         return FEATURES_BASE;
     }
 

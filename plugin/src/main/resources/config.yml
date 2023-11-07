@@ -6,13 +6,20 @@ map-id:
   min: 500000
   max: 1000000
 
+# Choose between DISPLAY and MAP
+# The traditional pre-display-entity render style is MAP
+# The more modern post-display-entity render style is DISPLAY
+rendering: "DISPLAY"
+
 # Will move the frame's hitbox out of the way to allow players to
 # access the crafting table from the top. This will only work on
 # 1.16.5, unfortunately.
+# Will not affect DISPLAY rendering
 adjust-hitbox: false
 
 # If enabled, players will be able to access the crafting table
 # when interacting with the fake item frame.
+# Will not affect DISPLAY rendering
 enable-packet-listening: true
 
 permission:

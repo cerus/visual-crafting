@@ -46,7 +46,7 @@ public class CraftingListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onInventoryClose(final InventoryCloseEvent event) {
-        if (!(event.getView().getTopInventory() instanceof CraftingInventory inv)) {
+        if (!(event.getView().getTopInventory() instanceof final CraftingInventory inv)) {
             return;
         }
         if (inv.getSize() != 10) {

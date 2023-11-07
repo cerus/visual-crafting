@@ -3,9 +3,11 @@ package dev.cerus.visualcrafting.plugin;
 import dev.cerus.visualcrafting.api.config.Config;
 import dev.cerus.visualcrafting.api.version.VersionAdapter;
 import dev.cerus.visualcrafting.plugin.listener.CraftingListener;
-import dev.cerus.visualcrafting.plugin.listener.listener.PlayerJoinListener;
+import dev.cerus.visualcrafting.plugin.listener.PlayerJoinListener;
 import dev.cerus.visualcrafting.plugin.texture.TextureCache;
 import dev.cerus.visualcrafting.plugin.texture.TextureDownloader;
+import dev.cerus.visualcrafting.plugin.visualizer.DisplayVisualizationController;
+import dev.cerus.visualcrafting.plugin.visualizer.MapVisualizationController;
 import dev.cerus.visualcrafting.plugin.visualizer.VisualizationController;
 import dev.cerus.visualcrafting.v16r3.VersionAdapter16R3;
 import dev.cerus.visualcrafting.v17r1.VersionAdapter17R1;
@@ -39,24 +41,6 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
         }
         final String minor = version.split("\\.")[1];
 
-        // Initialize textures
-        final File textureCacheFile = new File(this.getDataFolder(), "textures_" + minor);
-        final TextureCache textureCache = new TextureCache();
-        if (textureCacheFile.exists()) {
-            textureCache.read(textureCacheFile);
-        } else {
-            final TextureDownloader downloader = new TextureDownloader();
-            downloader.downloadTextures(this.getLogger(), new File(this.getDataFolder(), "temp"), textureCache)
-                    .whenComplete((unused, throwable) -> {
-                        if (throwable != null) {
-                            this.getLogger().log(Level.SEVERE, "Failed to download textures", throwable);
-                        }
-
-                        downloader.shutdown();
-                        textureCache.write(textureCacheFile);
-                    });
-        }
-
         // Initialize version adapter
         final VersionAdapter versionAdapter = switch (version) {
             case "1.16.5" -> new VersionAdapter16R3();
@@ -76,7 +60,57 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
             return;
         }
 
-        final VisualizationController visualizationController = new VisualizationController(versionAdapter, textureCache);
+        String renderType = this.getConfig().getString("rendering", "DISPLAY");
+        if (renderType.equals("DISPLAY")) {
+            final String[] verSplit = version.split("\\.");
+            final int minorVer = Integer.parseInt(verSplit[1]);
+            final int patchVer = Integer.parseInt(verSplit.length == 3 ? verSplit[2] : "0");
+            if (minorVer < 19 || (minorVer == 19 && patchVer != 4)) {
+                renderType = "MAP";
+                this.getLogger().warning("Render style 'DISPLAY' is not supported in version %s. Falling back to 'MAP'".formatted(version));
+            }
+        }
+        final String finalRenderType = renderType; // Java does Java things
+
+        final VisualizationController visualizationController = switch (renderType) {
+            case "MAP" -> {
+                // Initialize textures
+                final File textureCacheFile = new File(this.getDataFolder(), "textures_" + minor);
+                final TextureCache textureCache = new TextureCache();
+                if (textureCacheFile.exists()) {
+                    textureCache.read(textureCacheFile);
+                } else {
+                    final TextureDownloader downloader = new TextureDownloader();
+                    downloader.downloadTextures(this.getLogger(), new File(this.getDataFolder(), "temp"), textureCache)
+                            .whenComplete((unused, throwable) -> {
+                                if (throwable != null) {
+                                    this.getLogger().log(Level.SEVERE, "Failed to download textures", throwable);
+                                }
+
+                                downloader.shutdown();
+                                textureCache.write(textureCacheFile);
+                            });
+                }
+
+                yield new MapVisualizationController(versionAdapter, textureCache);
+            }
+            case "DISPLAY" -> new DisplayVisualizationController(versionAdapter);
+            default -> null;
+        };
+        if (visualizationController == null) {
+            this.getLogger().severe("Unsupported render style");
+            this.getPluginLoader().disablePlugin(this);
+            return;
+        }
+        if (!visualizationController.accepts(versionAdapter)) {
+            this.getLogger().severe("Controller '%s' does not accept version adapter for version %s"
+                    .formatted(visualizationController.getClass().getSimpleName(), version));
+            this.getLogger().severe("This usually means that you're using an unsupported render style. " +
+                                    "Changing the render style to 'MAP' should resolve this issue.");
+            this.getPluginLoader().disablePlugin(this);
+            return;
+        }
+
         versionAdapter.init(this, (player, integer) ->
                 this.getServer().getScheduler().runTask(this, () ->
                         visualizationController.entityClick(player, integer)));
@@ -85,7 +119,8 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
         this.getServer().getPluginManager().registerEvents(new PlayerJoinListener(this, versionAdapter), this);
 
         this.getLogger().info("Visual Crafting was enabled!");
-        this.getLogger().info("Using version adapter '" + versionAdapter.getClass().getSimpleName() + "'");
+        this.getLogger().info("Using version adapter '%s' and controller '%s'"
+                .formatted(versionAdapter.getClass().getSimpleName(), visualizationController.getClass().getSimpleName()));
 
         // bStats
         final Metrics metrics = new Metrics(this, 14561);
@@ -95,6 +130,7 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
                 this.adjustHitbox() ? "True" : "False"));
         metrics.addCustomChart(new SimplePie("enable_packet_listening", () ->
                 this.enablePacketListening() ? "True" : "False"));
+        metrics.addCustomChart(new SimplePie("render_style", () -> this.normalize(finalRenderType)));
     }
 
     public boolean canUse(final Permissible permissible) {
@@ -130,6 +166,13 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
     @Override
     public boolean enablePacketListening() {
         return this.getConfig().getBoolean("enable-packet-listening", true);
+    }
+
+    private String normalize(final String s) {
+        if (s.length() <= 1) {
+            return s;
+        }
+        return Character.toUpperCase(s.charAt(0)) + s.substring(1).toLowerCase();
     }
 
 }

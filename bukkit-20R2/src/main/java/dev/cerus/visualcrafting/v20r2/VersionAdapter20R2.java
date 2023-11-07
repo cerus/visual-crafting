@@ -1,13 +1,17 @@
 package dev.cerus.visualcrafting.v20r2;
 
+import com.mojang.math.Transformation;
 import dev.cerus.visualcrafting.api.config.Config;
+import dev.cerus.visualcrafting.api.version.FakeItemDisplay;
 import dev.cerus.visualcrafting.api.version.FakeMap;
+import dev.cerus.visualcrafting.api.version.Feature;
 import dev.cerus.visualcrafting.api.version.VersionAdapter;
 import io.netty.channel.ChannelDuplexHandler;
 import io.netty.channel.ChannelHandlerContext;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import net.minecraft.network.NetworkManager;
@@ -126,11 +130,45 @@ public class VersionAdapter20R2 extends VersionAdapter {
     }
 
     @Override
+    public int spawnItemDisplay(final FakeItemDisplay itemDisplay) {
+        final int eid = this.getNewEntityId();
+        final PacketPlayOutSpawnEntity packet = new PacketPlayOutSpawnEntity(
+                eid,
+                UUID.randomUUID(),
+                itemDisplay.getLocation().getBlockX(),
+                itemDisplay.getLocation().getBlockY(),
+                itemDisplay.getLocation().getBlockZ(),
+                0,
+                0,
+                EntityTypes.ae,
+                0,
+                new Vec3D(0, 0, 0),
+                0
+        );
+        Bukkit.getOnlinePlayers().forEach(player -> this.sendPacket(player, packet));
+        return eid;
+    }
+
+    @Override
     public void updateItemFrame(final int frameId, final ItemStack itemStack, final Rotation rotation, final boolean invisible) {
         final PacketPlayOutEntityMetadata packet = new PacketPlayOutEntityMetadata(frameId, Arrays.asList(
                 new DataWatcher.b<>(8, DataWatcherRegistry.h, CraftItemStack.asNMSCopy(itemStack)),
                 new DataWatcher.b<>(9, DataWatcherRegistry.b, rotation.ordinal()),
                 new DataWatcher.b<>(0, DataWatcherRegistry.a, (byte) (invisible ? 0x20 : 0))
+        ));
+        Bukkit.getOnlinePlayers().forEach(player -> this.sendPacket(player, packet));
+    }
+
+    @Override
+    public void updateItemDisplay(final int displayId, final FakeItemDisplay itemDisplay) {
+        final Transformation nmsTransf = new Transformation(itemDisplay.getTransformationMatrix());
+        final PacketPlayOutEntityMetadata packet = new PacketPlayOutEntityMetadata(displayId, Arrays.asList(
+                new DataWatcher.b<>(11, DataWatcherRegistry.A, nmsTransf.d()),
+                new DataWatcher.b<>(12, DataWatcherRegistry.A, nmsTransf.f()),
+                new DataWatcher.b<>(13, DataWatcherRegistry.B, nmsTransf.e()),
+                new DataWatcher.b<>(14, DataWatcherRegistry.B, nmsTransf.g()),
+                new DataWatcher.b<>(23, DataWatcherRegistry.h, CraftItemStack.asNMSCopy(itemDisplay.getItemStack())),
+                new DataWatcher.b<>(24, DataWatcherRegistry.a, (byte) itemDisplay.getTransform().ordinal())
         ));
         Bukkit.getOnlinePlayers().forEach(player -> this.sendPacket(player, packet));
     }
@@ -160,6 +198,11 @@ public class VersionAdapter20R2 extends VersionAdapter {
                         this.getMapData(map))
         );
         Bukkit.getOnlinePlayers().forEach(player -> this.sendPacket(player, packet));
+    }
+
+    @Override
+    public EnumSet<Feature> getImplementedFeatures() {
+        return FEATURES_DISPLAY;
     }
 
     private void sendPacket(final Player player, final Packet<?> packet) {
