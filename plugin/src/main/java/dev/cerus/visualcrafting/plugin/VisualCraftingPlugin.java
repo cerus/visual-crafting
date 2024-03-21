@@ -20,6 +20,8 @@ import dev.cerus.visualcrafting.v20r1.VersionAdapter20R1;
 import dev.cerus.visualcrafting.v20r2.VersionAdapter20R2;
 import dev.cerus.visualcrafting.v20r3.VersionAdapter20R3;
 import java.io.File;
+import java.net.URL;
+import java.security.CodeSource;
 import java.util.logging.Level;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
@@ -133,6 +135,7 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
         metrics.addCustomChart(new SimplePie("enable_packet_listening", () ->
                 this.enablePacketListening() ? "True" : "False"));
         metrics.addCustomChart(new SimplePie("render_style", () -> this.normalize(finalRenderType)));
+        metrics.addCustomChart(new SimplePie("download_source", this::getDownloadSource));
     }
 
     public boolean canUse(final Permissible permissible) {
@@ -175,6 +178,23 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
             return s;
         }
         return Character.toUpperCase(s.charAt(0)) + s.substring(1).toLowerCase();
+    }
+
+    private String getDownloadSource() {
+        final CodeSource codeSource = VisualCraftingPlugin.class.getProtectionDomain().getCodeSource();
+        if (codeSource == null) {
+            return "unknown";
+        }
+        final URL location = codeSource.getLocation();
+        String file = location.getFile();
+        final String[] split = file.split("/");
+        file = split[split.length - 1];
+        final int lastDash = file.lastIndexOf('-');
+        final int lastDot = file.lastIndexOf('.');
+        if (lastDash == -1 || lastDot == -1 || lastDot < lastDash) {
+            return "unknown";
+        }
+        return file.substring(lastDash + 1, lastDot).toLowerCase();
     }
 
 }
