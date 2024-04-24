@@ -11,10 +11,12 @@ public class FakeMap {
 
     private final int id;
     private final byte[] data;
+    private final Object handle;
 
-    FakeMap(final int id) {
+    FakeMap(final int id, Object handle) {
         this.id = id;
         this.data = new byte[128 * 128];
+        this.handle = handle;
     }
 
     public void setPixel(final int x, final int y, final byte color) {
@@ -41,4 +43,7 @@ public class FakeMap {
         return this.data;
     }
 
+    Object getHandle() {
+        return handle;
+    }
 }

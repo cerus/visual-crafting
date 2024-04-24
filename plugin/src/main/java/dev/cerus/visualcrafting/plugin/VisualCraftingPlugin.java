@@ -19,6 +19,7 @@ import dev.cerus.visualcrafting.v19r3.VersionAdapter19R3;
 import dev.cerus.visualcrafting.v20r1.VersionAdapter20R1;
 import dev.cerus.visualcrafting.v20r2.VersionAdapter20R2;
 import dev.cerus.visualcrafting.v20r3.VersionAdapter20R3;
+import dev.cerus.visualcrafting.v20r4.VersionAdapter20R4;
 import java.io.File;
 import java.net.URL;
 import java.security.CodeSource;
@@ -56,6 +57,7 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
             case "1.20", "1.20.1" -> new VersionAdapter20R1();
             case "1.20.2" -> new VersionAdapter20R2();
             case "1.20.3", "1.20.4" -> new VersionAdapter20R3();
+            case "1.20.5" -> new VersionAdapter20R4();
             default -> null;
         };
         if (versionAdapter == null) {

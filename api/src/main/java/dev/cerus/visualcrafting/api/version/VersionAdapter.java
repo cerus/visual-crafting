@@ -83,12 +83,24 @@ public abstract class VersionAdapter {
     /**
      * Helper method for creating a new fake map
      *
+     * @param id     The map's id
+     * @param handle The map's nms handle
+     *
+     * @return A new fake map
+     */
+    protected FakeMap createMap(final int id, Object handle) {
+        return new FakeMap(id, handle);
+    }
+
+    /**
+     * Helper method for creating a new fake map
+     *
      * @param id The map's id
      *
      * @return A new fake map
      */
     protected FakeMap createMap(final int id) {
-        return new FakeMap(id);
+        return createMap(id, null);
     }
 
     /**
@@ -100,6 +112,17 @@ public abstract class VersionAdapter {
      */
     protected byte[] getMapData(final FakeMap fakeMap) {
         return fakeMap.getData();
+    }
+
+    /**
+     * Get a fake map's nms handle
+     *
+     * @param fakeMap The fake map
+     *
+     * @return The nms handle
+     */
+    protected Object getMapHandle(FakeMap fakeMap) {
+        return fakeMap.getHandle();
     }
 
     /**

@@ -21,6 +21,7 @@
         <module>bukkit-20R1</module>
         <module>bukkit-20R2</module>
         <module>bukkit-20R3</module>
+        <module>bukkit-20R4</module>
     </modules>
 
     <properties>
