@@ -182,35 +182,11 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>spigotmc</id>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <outputFile>target/${project.build.finalName}-spigotmc.jar</outputFile>
-                            <minimizeJar>false</minimizeJar>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>modrinth</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <outputFile>target/${project.build.finalName}-modrinth.jar</outputFile>
-                            <minimizeJar>false</minimizeJar>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>github</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <outputFile>target/${project.build.finalName}-github.jar</outputFile>
                             <minimizeJar>false</minimizeJar>
                         </configuration>
                     </execution>

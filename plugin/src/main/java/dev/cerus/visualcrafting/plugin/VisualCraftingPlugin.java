@@ -21,6 +21,9 @@ import dev.cerus.visualcrafting.v20r2.VersionAdapter20R2;
 import dev.cerus.visualcrafting.v20r3.VersionAdapter20R3;
 import dev.cerus.visualcrafting.v20r4.VersionAdapter20R4;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.security.CodeSource;
 import java.util.logging.Level;
@@ -183,20 +186,21 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
     }
 
     private String getDownloadSource() {
-        final CodeSource codeSource = VisualCraftingPlugin.class.getProtectionDomain().getCodeSource();
-        if (codeSource == null) {
+        StringBuilder sourceBuilder = new StringBuilder();
+        try (InputStream in = VisualCraftingPlugin.class.getClassLoader().getResourceAsStream("metadata")) {
+            if (in == null) {
+                return "unknown";
+            }
+            byte[] buffer = new byte[64];
+            int read;
+            while ((read = in.read(buffer)) != -1) {
+                sourceBuilder.append(new String(buffer, 0, read));
+            }
+        } catch (IOException e) {
+            getLogger().log(Level.WARNING, "Failed to read metadata file", e);
             return "unknown";
         }
-        final URL location = codeSource.getLocation();
-        String file = location.getFile();
-        final String[] split = file.split("/");
-        file = split[split.length - 1];
-        final int lastDash = file.lastIndexOf('-');
-        final int lastDot = file.lastIndexOf('.');
-        if (lastDash == -1 || lastDot == -1 || lastDot < lastDash) {
-            return "unknown";
-        }
-        return file.substring(lastDash + 1, lastDot).toLowerCase();
+        return sourceBuilder.toString();
     }
 
 }
