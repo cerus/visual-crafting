@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.security.CodeSource;
 import java.util.logging.Level;
@@ -50,17 +51,17 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
 
         // Initialize version adapter
         final VersionAdapter versionAdapter = switch (version) {
-            case "1.16.5" -> new VersionAdapter16R3();
-            case "1.17", "1.17.1" -> new VersionAdapter17R1();
-            case "1.18.1" -> new VersionAdapter18R1();
-            case "1.18.2" -> new VersionAdapter18R2();
-            case "1.19", "1.19.1", "1.19.2" -> new VersionAdapter19R1();
-            case "1.19.3" -> new VersionAdapter19R2();
-            case "1.19.4" -> new VersionAdapter19R3();
-            case "1.20", "1.20.1" -> new VersionAdapter20R1();
-            case "1.20.2" -> new VersionAdapter20R2();
-            case "1.20.3", "1.20.4" -> new VersionAdapter20R3();
-            case "1.20.5" -> new VersionAdapter20R4();
+            case "1.16.5" -> createVersionAdapter("16R3");
+            case "1.17", "1.17.1" -> createVersionAdapter("17R1");
+            case "1.18.1" -> createVersionAdapter("18R1");
+            case "1.18.2" -> createVersionAdapter("18R2");
+            case "1.19", "1.19.1", "1.19.2" -> createVersionAdapter("19R1");
+            case "1.19.3" -> createVersionAdapter("19R2");
+            case "1.19.4" -> createVersionAdapter("19R3");
+            case "1.20", "1.20.1" -> createVersionAdapter("20R1");
+            case "1.20.2" -> createVersionAdapter("20R2");
+            case "1.20.3", "1.20.4" -> createVersionAdapter("20R3");
+            case "1.20.5" -> createVersionAdapter("20R4");
             default -> null;
         };
         if (versionAdapter == null) {
@@ -183,6 +184,18 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
             return s;
         }
         return Character.toUpperCase(s.charAt(0)) + s.substring(1).toLowerCase();
+    }
+
+    // Required to prevent the JVM from complaining about java versions
+    private VersionAdapter createVersionAdapter(String versionSlug) {
+        try {
+            String classPath = "dev.cerus.visualcrafting.v%s.VersionAdapter%s".formatted(versionSlug.toLowerCase(), versionSlug.toUpperCase());
+            Class<?> cls = Class.forName(classPath);
+            return (VersionAdapter) cls.getDeclaredConstructor().newInstance();
+        } catch (ClassNotFoundException | InvocationTargetException | InstantiationException | IllegalAccessException | NoSuchMethodException e) {
+            getLogger().log(Level.SEVERE, "Could not create version adapter", e);
+            return null;
+        }
     }
 
     private String getDownloadSource() {
