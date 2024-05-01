@@ -61,7 +61,7 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
             case "1.20", "1.20.1" -> createVersionAdapter("20R1");
             case "1.20.2" -> createVersionAdapter("20R2");
             case "1.20.3", "1.20.4" -> createVersionAdapter("20R3");
-            case "1.20.5" -> createVersionAdapter("20R4");
+            case "1.20.5", "1.20.6" -> createVersionAdapter("20R4");
             default -> null;
         };
         if (versionAdapter == null) {
