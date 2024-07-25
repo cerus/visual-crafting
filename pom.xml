@@ -7,7 +7,7 @@
     <groupId>dev.cerus.visualcrafting</groupId>
     <artifactId>parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.3.2</version>
+    <version>1.3.3</version>
     <modules>
         <module>plugin</module>
         <module>api</module>
@@ -22,6 +22,7 @@
         <module>bukkit-20R2</module>
         <module>bukkit-20R3</module>
         <module>bukkit-20R4</module>
+        <module>bukkit-21R1</module>
     </modules>
 
     <properties>
