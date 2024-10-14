@@ -77,7 +77,7 @@ public class MapVisualizationController implements VisualizationController {
      */
     @Override
     public void recipeSelected(final ItemStack[] matrix, final ItemStack result, final Player actor, final Block craftingTable) {
-        if (craftingTable.getRelative(BlockFace.UP).getType() != Material.AIR) {
+        if (!craftingTable.getRelative(BlockFace.UP).getType().isTransparent()) {
             return;
         }
 
