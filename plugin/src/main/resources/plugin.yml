@@ -7,3 +7,4 @@ api-version: 1.16
 description: "Visualizes the crafting process using invisible item frames and maps."
 prefix: "Visual Crafting"
 website: "https://github.com/cerus/visual-crafting"
+folia-supported: true

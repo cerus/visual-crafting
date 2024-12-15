@@ -1,16 +1,21 @@
 package dev.cerus.visualcrafting.plugin.listener;
 
+import dev.cerus.visualcrafting.folia.FoliaUtil;
 import dev.cerus.visualcrafting.plugin.VisualCraftingPlugin;
 import dev.cerus.visualcrafting.plugin.visualizer.VisualizationController;
 import java.util.Arrays;
 import java.util.Objects;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.inventory.InventoryView;
 
 public class CraftingInventoryInteractListener implements Listener {
     private final VisualCraftingPlugin plugin;
@@ -23,20 +28,25 @@ public class CraftingInventoryInteractListener implements Listener {
 
     @EventHandler
     public void onDrag(InventoryDragEvent event) {
-        onInteract(event);
+        onInteract(event.getView());
     }
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
-        onInteract(event);
+        onInteract(event.getView());
     }
 
-    public void onInteract(InventoryInteractEvent event) {
-        if (!(event.getView().getTopInventory() instanceof CraftingInventory inv)) {
+    @EventHandler
+    public void onPrepareCraft(PrepareItemCraftEvent event) {
+        onInteract(event.getView());
+    }
+
+    public void onInteract(InventoryView view) {
+        if (!(view.getTopInventory() instanceof CraftingInventory inv)) {
             return;
         }
-        Player player = (Player) event.getWhoClicked();
-        plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+        Player player = (Player) view.getPlayer();
+        Runnable cmd = () -> {
             if (!player.isOnline()) {
                 return;
             }
@@ -49,6 +59,10 @@ public class CraftingInventoryInteractListener implements Listener {
                         player,
                         inv.getLocation().getBlock());
             }
-        }, 1);
+        };
+        FoliaUtil.runIfFolia(
+                () -> FoliaUtil.scheduleOnEntity(plugin, player, cmd, 1),
+                () -> Bukkit.getServer().getScheduler().runTaskLater(plugin, cmd, 1)
+        );
     }
 }

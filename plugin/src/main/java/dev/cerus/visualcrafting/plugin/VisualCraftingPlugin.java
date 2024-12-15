@@ -2,6 +2,7 @@ package dev.cerus.visualcrafting.plugin;
 
 import dev.cerus.visualcrafting.api.config.Config;
 import dev.cerus.visualcrafting.api.version.VersionAdapter;
+import dev.cerus.visualcrafting.folia.FoliaUtil;
 import dev.cerus.visualcrafting.plugin.listener.CancelCraftingListener;
 import dev.cerus.visualcrafting.plugin.listener.CraftingInventoryInteractListener;
 import dev.cerus.visualcrafting.plugin.listener.PlayerJoinListener;
@@ -115,6 +116,13 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
         versionAdapter.init(this, (player, integer) ->
                 this.getServer().getScheduler().runTask(this, () ->
                         visualizationController.entityClick(player, integer)));
+        versionAdapter.init(this, (player, integer) -> {
+            Runnable cmd = () -> visualizationController.entityClick(player, integer);
+            FoliaUtil.runIfFolia(
+                    () -> FoliaUtil.scheduleOnEntity(VisualCraftingPlugin.this, player, cmd, 0),
+                    () -> getServer().getScheduler().runTask(this, cmd)
+            );
+        });
 
         this.getServer().getPluginManager().registerEvents(new CancelCraftingListener(visualizationController), this);
         this.getServer().getPluginManager().registerEvents(new PlayerJoinListener(this, versionAdapter), this);
