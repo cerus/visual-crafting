@@ -22,6 +22,10 @@ adjust-hitbox: false
 # Will not affect DISPLAY rendering
 enable-packet-listening: true
 
+# If set to true, only fully-formed recipes will be visualized on the crafting table.
+# If set to false, all items on the crafting table will be visualized, even if no valid recipe is formed.
+only-visualize-recipes: false
+
 permission:
   enable: false
   perm: "my.cool.permission"

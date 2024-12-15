@@ -4,18 +4,15 @@ import dev.cerus.visualcrafting.plugin.VisualCraftingPlugin;
 import dev.cerus.visualcrafting.plugin.visualizer.VisualizationController;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.CraftingInventory;
 
-public class CraftingListener implements Listener {
-
+public class PreItemCraftListener implements Listener {
     private final VisualCraftingPlugin plugin;
     private final VisualizationController visualizationController;
 
-    public CraftingListener(final VisualCraftingPlugin plugin, final VisualizationController visualizationController) {
+    public PreItemCraftListener(VisualCraftingPlugin plugin, VisualizationController visualizationController) {
         this.plugin = plugin;
         this.visualizationController = visualizationController;
     }
@@ -43,22 +40,4 @@ public class CraftingListener implements Listener {
                     inv.getLocation().getBlock());
         }
     }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onInventoryClose(final InventoryCloseEvent event) {
-        if (!(event.getView().getTopInventory() instanceof final CraftingInventory inv)) {
-            return;
-        }
-        if (inv.getSize() != 10) {
-            // Not a crafting table
-            return;
-        }
-        if (inv.getLocation() == null) {
-            return;
-        }
-
-        // Crafting table closed? Cancel crafting
-        this.visualizationController.craftingCancelled((Player) event.getView().getPlayer(), inv.getLocation().getBlock());
-    }
-
 }

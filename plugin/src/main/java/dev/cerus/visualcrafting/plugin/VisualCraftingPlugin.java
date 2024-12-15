@@ -2,8 +2,10 @@ package dev.cerus.visualcrafting.plugin;
 
 import dev.cerus.visualcrafting.api.config.Config;
 import dev.cerus.visualcrafting.api.version.VersionAdapter;
-import dev.cerus.visualcrafting.plugin.listener.CraftingListener;
+import dev.cerus.visualcrafting.plugin.listener.CancelCraftingListener;
+import dev.cerus.visualcrafting.plugin.listener.CraftingInventoryInteractListener;
 import dev.cerus.visualcrafting.plugin.listener.PlayerJoinListener;
+import dev.cerus.visualcrafting.plugin.listener.PreItemCraftListener;
 import dev.cerus.visualcrafting.plugin.texture.TextureCache;
 import dev.cerus.visualcrafting.plugin.texture.TextureDownloader;
 import dev.cerus.visualcrafting.plugin.visualizer.DisplayVisualizationController;
@@ -114,8 +116,16 @@ public class VisualCraftingPlugin extends JavaPlugin implements Config {
                 this.getServer().getScheduler().runTask(this, () ->
                         visualizationController.entityClick(player, integer)));
 
-        this.getServer().getPluginManager().registerEvents(new CraftingListener(this, visualizationController), this);
+        this.getServer().getPluginManager().registerEvents(new CancelCraftingListener(visualizationController), this);
         this.getServer().getPluginManager().registerEvents(new PlayerJoinListener(this, versionAdapter), this);
+
+        if (getConfig().getBoolean("only-visualize-recipes", false)) {
+            // Only visualize valid recipes
+            this.getServer().getPluginManager().registerEvents(new PreItemCraftListener(this, visualizationController), this);
+        } else {
+            // Visualize all items
+            this.getServer().getPluginManager().registerEvents(new CraftingInventoryInteractListener(this, visualizationController), this);
+        }
 
         this.getLogger().info("Visual Crafting was enabled!");
         this.getLogger().info("Using version adapter '%s' and controller '%s'"
