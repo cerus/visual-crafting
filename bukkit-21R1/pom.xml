@@ -6,7 +6,7 @@
     <parent>
         <groupId>dev.cerus.visualcrafting</groupId>
         <artifactId>parent</artifactId>
-        <version>1.4.1</version>
+        <version>1.4.2</version>
     </parent>
 
     <artifactId>bukkit-21R1</artifactId>

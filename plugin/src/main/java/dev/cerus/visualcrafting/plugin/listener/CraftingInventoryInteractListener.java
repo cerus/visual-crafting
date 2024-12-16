@@ -11,11 +11,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryEvent;
-import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.InventoryView;
+import org.bukkit.inventory.ItemStack;
 
 public class CraftingInventoryInteractListener implements Listener {
     private final VisualCraftingPlugin plugin;
@@ -45,16 +44,22 @@ public class CraftingInventoryInteractListener implements Listener {
         if (!(view.getTopInventory() instanceof CraftingInventory inv)) {
             return;
         }
+        ItemStack[] matrix = inv.getMatrix();
+        if (matrix.length != 9) {
+            // We only want crafting tables
+            return;
+        }
+
         Player player = (Player) view.getPlayer();
         Runnable cmd = () -> {
             if (!player.isOnline()) {
                 return;
             }
 
-            if (Arrays.stream(inv.getMatrix()).allMatch(Objects::isNull) && inv.getResult() == null) {
+            if (Arrays.stream(matrix).allMatch(Objects::isNull) && inv.getResult() == null) {
                 this.visualizationController.craftingCancelled(player, inv.getLocation().getBlock());
             } else {
-                this.visualizationController.recipeSelected(inv.getMatrix(),
+                this.visualizationController.recipeSelected(matrix,
                         inv.getResult(),
                         player,
                         inv.getLocation().getBlock());
