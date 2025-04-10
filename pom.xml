@@ -25,6 +25,7 @@
         <module>bukkit-21R1</module>
         <module>bukkit-21R2</module>
         <module>bukkit-21R3</module>
+        <module>bukkit-21R4</module>
         <module>folia</module>
     </modules>
 
