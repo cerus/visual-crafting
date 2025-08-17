@@ -124,13 +124,13 @@ function install_craftbukkit() {
   curjava="${JAVA_DIRS[$CURRENT_JAVA_IDX]}"
   info "Installing $CURRENT_CRAFTBUKKIT"
   info "  Bukkit"
-  cd Bukkit || echo; JAVA_HOME="../../$curjava" mvn install >> "$logdir/maven.log" 2>&1
+  cd Bukkit || echo; JAVA_HOME="../../$curjava" mvn install >> "../$logdir/maven.log" 2>&1
   info "  Spigot / API"
-  cd ../Spigot/Spigot-API || echo; JAVA_HOME="../../../$curjava" mvn install >> "$logdir/maven.log" 2>&1
+  cd ../Spigot/Spigot-API || echo; JAVA_HOME="../../../$curjava" mvn install >> "../../$logdir/maven.log" 2>&1
   info "  CraftBukkit"
-  cd ../../CraftBukkit || echo; JAVA_HOME="../../$curjava" mvn install >> "$logdir/maven.log" 2>&1
+  cd ../../CraftBukkit || echo; JAVA_HOME="../../$curjava" mvn install >> "../$logdir/maven.log" 2>&1
   info "  Spigot / Server"
-  cd ../Spigot/Spigot-Server || echo; JAVA_HOME="../../../$curjava" mvn install >> "$logdir/maven.log" 2>&1
+  cd ../Spigot/Spigot-Server || echo; JAVA_HOME="../../../$curjava" mvn install >> "../../$logdir/maven.log" 2>&1
   cd ../../../
   INSTALLED="$((INSTALLED+1))"
 }
