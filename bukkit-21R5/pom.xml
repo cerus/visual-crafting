@@ -6,7 +6,7 @@
     <parent>
         <groupId>dev.cerus.visualcrafting</groupId>
         <artifactId>parent</artifactId>
-        <version>1.4.6</version>
+        <version>1.4.7</version>
     </parent>
 
     <artifactId>bukkit-21R5</artifactId>
@@ -28,7 +28,7 @@
         <dependency>
             <groupId>org.bukkit</groupId>
             <artifactId>craftbukkit</artifactId>
-            <version>1.21.7-R0.1-SNAPSHOT</version>
+            <version>1.21.8-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
