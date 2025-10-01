@@ -1,3 +1,4 @@
+<img src="https://img.shields.io/badge/Total_Downloads-30k-orange">
 <img width="150" height="150" align="right" src="https://i.imgur.com/ev28MJZ.png">
 
 # visual-crafting
