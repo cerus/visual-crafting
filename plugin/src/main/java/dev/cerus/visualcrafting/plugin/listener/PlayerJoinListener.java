@@ -2,6 +2,7 @@ package dev.cerus.visualcrafting.plugin.listener;
 
 import dev.cerus.visualcrafting.api.version.VersionAdapter;
 import dev.cerus.visualcrafting.plugin.VisualCraftingPlugin;
+import java.util.logging.Level;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -19,7 +20,11 @@ public class PlayerJoinListener implements Listener {
     @EventHandler
     public void onJoin(final PlayerJoinEvent event) {
         if (this.plugin.enablePacketListening()) {
-            this.versionAdapter.inject(event.getPlayer());
+            try {
+                this.versionAdapter.inject(event.getPlayer());
+            } catch (Throwable t) {
+                plugin.getLogger().log(Level.SEVERE, "Failed to inject packet listener", t);
+            }
         }
     }
 
