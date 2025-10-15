@@ -4,9 +4,11 @@
 
 Visualizes the crafting process
 
+<img src="https://img.shields.io/badge/Total_Downloads-30k-green">
+
 ## Compatibility
 
-Compatible with Spigot & Paper 1.16.5 - 1.21.9
+Compatible with Spigot & Paper 1.16.5 - 1.21.10
 
 ## How it works
 
